@@ -1,0 +1,798 @@
+/* ═══════════════════════════════════════════════════════════════════
+   style.css — TaskFlow To-Do App Styles
+   
+   Organization:
+   1. CSS Custom Properties (Design Tokens / Variables)
+   2. Reset & Base
+   3. Layout & Container
+   4. Header
+   5. Card & Add-Task Form
+   6. Toolbar (Search + Filters)
+   7. Task List & Task Items
+   8. Priority Badges
+   9. Modal
+   10. Toast Notification
+   11. Loading & Empty States
+   12. Responsive Design (Mobile)
+   13. Animations
+═══════════════════════════════════════════════════════════════════ */
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   1. CSS CUSTOM PROPERTIES (Design Tokens)
+   
+   Using CSS variables means: change one value here, update everywhere.
+   This is the single source of truth for our color palette and spacing.
+═══════════════════════════════════════════════════════════════════ */
+:root {
+  /* Color Palette — Dark mode base */
+  --bg-base:        #0f1117;
+  --bg-surface:     #1a1d27;
+  --bg-elevated:    #21253a;
+  --bg-hover:       #272b3f;
+
+  /* Accent — a vibrant indigo-violet */
+  --accent:         #6c63ff;
+  --accent-hover:   #574fd6;
+  --accent-glow:    rgba(108, 99, 255, 0.25);
+
+  /* Status Colors */
+  --color-success:  #22c55e;
+  --color-danger:   #ef4444;
+  --color-warning:  #f59e0b;
+  --color-info:     #3b82f6;
+
+  /* Priority */
+  --priority-low:      #22c55e;
+  --priority-medium:   #f59e0b;
+  --priority-high:     #ef4444;
+
+  /* Text */
+  --text-primary:   #f0f2ff;
+  --text-secondary: #8b93b0;
+  --text-muted:     #555d7a;
+
+  /* Borders */
+  --border-color:   #2a2f46;
+  --border-focus:   #6c63ff;
+
+  /* Spacing */
+  --radius-sm:      8px;
+  --radius-md:      12px;
+  --radius-lg:      18px;
+  --radius-xl:      24px;
+
+  /* Shadows */
+  --shadow-card:    0 4px 24px rgba(0, 0, 0, 0.35);
+  --shadow-accent:  0 0 0 3px var(--accent-glow);
+
+  /* Typography */
+  --font-family:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-size-base: 15px;
+
+  /* Transitions */
+  --transition:     0.2s ease;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   2. RESET & BASE STYLES
+═══════════════════════════════════════════════════════════════════ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: var(--font-size-base);
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  /* Subtle gradient radial background for depth */
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(108, 99, 255, 0.08) 0%, transparent 70%);
+}
+
+ul { list-style: none; }
+
+a { color: inherit; text-decoration: none; }
+
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+button { cursor: pointer; border: none; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   3. LAYOUT & CONTAINER
+═══════════════════════════════════════════════════════════════════ */
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.main-content {
+  padding-top: 32px;
+  padding-bottom: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   4. HEADER
+═══════════════════════════════════════════════════════════════════ */
+.header {
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 22px;
+  color: var(--accent);
+  /* Subtle pulse animation on the logo icon */
+  animation: pulse-logo 3s ease-in-out infinite;
+}
+
+.logo-text {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  background: linear-gradient(135deg, #f0f2ff 0%, #a89dff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.header-stats {
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: var(--bg-elevated);
+  padding: 5px 14px;
+  border-radius: 100px;
+  border: 1px solid var(--border-color);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   5. CARD — Reusable card container
+═══════════════════════════════════════════════════════════════════ */
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 28px;
+  box-shadow: var(--shadow-card);
+}
+
+.card-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  letter-spacing: -0.2px;
+}
+
+
+/* ─── FORM ELEMENTS ─────────────────────────────── */
+.form-row {
+  margin-bottom: 16px;
+}
+
+.form-row.two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group.full-width { grid-column: 1 / -1; }
+
+label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  letter-spacing: 0.2px;
+}
+
+.required { color: var(--color-danger); margin-left: 2px; }
+.optional { color: var(--text-muted); font-weight: 400; }
+
+/* Shared input/textarea/select styles */
+input[type="text"],
+input[type="date"],
+textarea,
+select {
+  width: 100%;
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+textarea:focus,
+select:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-accent);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-muted);
+}
+
+textarea { resize: vertical; }
+
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%238b93b0' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Date input calendar icon color */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
+
+.field-error {
+  font-size: 12px;
+  color: var(--color-danger);
+  min-height: 16px;
+  display: block;
+}
+
+/* Form action buttons */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+
+/* ─── BUTTONS ────────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 14px;
+  transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+  letter-spacing: 0.1px;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 0 20px var(--accent-glow);
+}
+
+.btn-ghost {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+.btn-ghost:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+.btn-danger:hover {
+  background: #dc2626;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35);
+}
+
+.btn-icon { font-size: 16px; line-height: 1; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   6. TOOLBAR — Search + Filters
+═══════════════════════════════════════════════════════════════════ */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Search */
+.search-wrapper {
+  flex: 1;
+  min-width: 200px;
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 15px;
+  pointer-events: none;
+}
+
+.search-wrapper input {
+  width: 100%;
+  padding-left: 38px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.search-wrapper input:focus {
+  border-color: var(--border-focus);
+  box-shadow: var(--shadow-accent);
+}
+
+/* Filter tabs */
+.filter-tabs {
+  display: flex;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 4px;
+  gap: 4px;
+}
+
+.filter-tab {
+  padding: 7px 18px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: all var(--transition);
+}
+
+.filter-tab:hover {
+  color: var(--text-primary);
+  background: var(--bg-elevated);
+}
+
+.filter-tab.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   7. TASK LIST & TASK ITEMS
+═══════════════════════════════════════════════════════════════════ */
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Individual task card */
+.task-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition);
+  animation: slide-in 0.25s ease;
+  /* Left border indicates priority */
+  border-left: 3px solid transparent;
+}
+
+.task-item:hover {
+  transform: translateY(-2px);
+  border-color: var(--bg-hover);
+  box-shadow: var(--shadow-card);
+}
+
+/* Priority left borders */
+.task-item.priority-low    { border-left-color: var(--priority-low); }
+.task-item.priority-medium { border-left-color: var(--priority-medium); }
+.task-item.priority-high   { border-left-color: var(--priority-high); }
+
+/* Completed task: dim it */
+.task-item.completed {
+  opacity: 0.6;
+}
+
+/* Custom checkbox */
+.task-checkbox {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  flex-shrink: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+  margin-top: 2px;
+  background: transparent;
+}
+
+.task-checkbox:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.task-checkbox.checked {
+  background: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.task-checkbox.checked::after {
+  content: "✓";
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Task body — grows to fill space */
+.task-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+  /* Prevent long titles from breaking layout */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-item.completed .task-title {
+  text-decoration: line-through;
+  color: var(--text-muted);
+}
+
+.task-description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+
+/* Meta row: priority badge + due date */
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Task action buttons */
+.task-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.task-item:hover .task-actions { opacity: 1; }
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition);
+}
+
+.action-btn:hover { transform: scale(1.1); }
+
+.edit-btn:hover {
+  background: rgba(108, 99, 255, 0.15);
+  border-color: var(--accent);
+}
+
+.delete-btn:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: var(--color-danger);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   8. PRIORITY BADGES & DUE DATE
+═══════════════════════════════════════════════════════════════════ */
+.priority-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 2px 10px;
+  border-radius: 100px;
+}
+
+.priority-badge.low {
+  background: rgba(34, 197, 94, 0.12);
+  color: var(--priority-low);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.priority-badge.medium {
+  background: rgba(245, 158, 11, 0.12);
+  color: var(--priority-medium);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+}
+
+.priority-badge.high {
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--priority-high);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.due-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Due date: red if overdue */
+.due-date.overdue {
+  color: var(--color-danger);
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   9. MODAL — Delete Confirmation
+═══════════════════════════════════════════════════════════════════ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fade-in 0.2s ease;
+}
+
+.modal {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  padding: 36px 32px;
+  text-align: center;
+  max-width: 360px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: scale-in 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-icon { font-size: 40px; margin-bottom: 12px; }
+
+.modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.modal-message {
+  font-size: 14px;
+  color: var(--text-secondary);
+  margin-bottom: 28px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   10. TOAST NOTIFICATION
+═══════════════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 100px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 2000;
+  opacity: 0;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.toast.success { border-color: var(--color-success); color: var(--color-success); }
+.toast.error   { border-color: var(--color-danger);  color: var(--color-danger);  }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   11. LOADING & EMPTY STATES
+═══════════════════════════════════════════════════════════════════ */
+.loading-state,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.empty-icon { font-size: 48px; }
+
+.empty-state h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.empty-state p {
+  font-size: 14px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   12. RESPONSIVE DESIGN
+═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .form-row.two-col {
+    grid-template-columns: 1fr;  /* Stack columns on mobile */
+  }
+
+  .toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .filter-tabs {
+    justify-content: center;
+  }
+
+  .task-actions {
+    opacity: 1;  /* Always visible on touch devices */
+  }
+
+  .card {
+    padding: 20px 16px;
+  }
+
+  .task-item {
+    flex-wrap: wrap;
+  }
+
+  .task-actions {
+    margin-left: 36px;  /* Align under body, past checkbox */
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   13. KEYFRAME ANIMATIONS
+═══════════════════════════════════════════════════════════════════ */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse-logo {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.6; }
+}
+
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

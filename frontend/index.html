@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A clean, full-stack To-Do List app. Add, edit, delete and track tasks with priorities and due dates." />
+
+  <title>TaskFlow — To-Do List</title>
+
+  <!-- Google Fonts: Inter for clean modern typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Our stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════════ -->
+  <header class="header">
+    <div class="container">
+      <div class="header-inner">
+        <div class="logo">
+          <span class="logo-icon">✦</span>
+          <span class="logo-text">TaskFlow</span>
+        </div>
+        <div class="header-stats" id="header-stats">
+          <!-- JS fills: "3 of 7 tasks done" -->
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════ -->
+  <main class="container main-content">
+
+    <!-- ─── ADD TASK CARD ─────────────────────── -->
+    <section class="card add-task-card" id="add-task-section">
+      <h2 class="card-title">Add New Task</h2>
+
+      <form id="task-form" novalidate>
+        <!-- Title row -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="task-title">Task Title <span class="required">*</span></label>
+            <input
+              type="text"
+              id="task-title"
+              name="title"
+              placeholder="What do you need to do?"
+              maxlength="200"
+              required
+            />
+            <span class="field-error" id="title-error"></span>
+          </div>
+        </div>
+
+        <!-- Description row -->
+        <div class="form-row">
+          <div class="form-group full-width">
+            <label for="task-description">Description <span class="optional">(optional)</span></label>
+            <textarea
+              id="task-description"
+              name="description"
+              placeholder="Add any extra details..."
+              rows="2"
+              maxlength="500"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Priority + Due Date row -->
+        <div class="form-row two-col">
+          <div class="form-group">
+            <label for="task-priority">Priority</label>
+            <select id="task-priority" name="priority">
+              <option value="low">🟢 Low</option>
+              <option value="medium" selected>🟡 Medium</option>
+              <option value="high">🔴 High</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="task-due-date">Due Date <span class="optional">(optional)</span></label>
+            <input type="date" id="task-due-date" name="due_date" />
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="form-actions">
+          <!-- Hidden ID field for edit mode -->
+          <input type="hidden" id="task-id" />
+          <button type="submit" class="btn btn-primary" id="submit-btn">
+            <span class="btn-icon">＋</span> Add Task
+          </button>
+          <button type="button" class="btn btn-ghost" id="cancel-btn" style="display:none;">
+            Cancel
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ─── FILTERS & SEARCH ──────────────────── -->
+    <section class="toolbar">
+      <!-- Search input -->
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="search-input"
+          placeholder="Search tasks..."
+          aria-label="Search tasks"
+        />
+      </div>
+
+      <!-- Filter buttons -->
+      <div class="filter-tabs" role="tablist" aria-label="Task filter">
+        <button class="filter-tab active" data-filter="all" role="tab" id="filter-all">All</button>
+        <button class="filter-tab" data-filter="pending" role="tab" id="filter-pending">Pending</button>
+        <button class="filter-tab" data-filter="completed" role="tab" id="filter-completed">Completed</button>
+      </div>
+    </section>
+
+    <!-- ─── TASK LIST ──────────────────────────── -->
+    <section id="task-list-section">
+      <!-- Loading state -->
+      <div class="loading-state" id="loading-state">
+        <div class="spinner"></div>
+        <p>Loading tasks...</p>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="empty-state" style="display:none;">
+        <div class="empty-icon">📋</div>
+        <h3>No tasks found</h3>
+        <p id="empty-message">Add your first task above to get started!</p>
+      </div>
+
+      <!-- Task items are injected here by JavaScript -->
+      <ul class="task-list" id="task-list" aria-label="Task list"></ul>
+    </section>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════
+       DELETE CONFIRMATION MODAL
+  ═══════════════════════════════════════════ -->
+  <div class="modal-overlay" id="modal-overlay" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-icon">🗑️</div>
+      <h3 class="modal-title">Delete Task?</h3>
+      <p class="modal-message">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" id="modal-cancel-btn">Keep it</button>
+        <button class="btn btn-danger" id="modal-confirm-btn">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════
+       TOAST NOTIFICATION
+  ═══════════════════════════════════════════ -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <!-- Our JavaScript — loaded after HTML is parsed -->
+  <script src="app.js"></script>
+</body>
+</html>

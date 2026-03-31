@@ -1,0 +1,34 @@
+# ── Python cache ──────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyc
+
+# ── Virtual environment ───────────────────────────────────────────
+backend/venv/
+venv/
+.venv/
+env/
+
+# ── SQLite database file ──────────────────────────────────────────
+# Don't bake the dev DB into the image — Railway uses a fresh one
+backend/todo.db
+*.db
+*.sqlite3
+
+# ── OS files ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.swp
+
+# ── Editor / IDE ──────────────────────────────────────────────────
+.vscode/
+.idea/
+*.code-workspace
+
+# ── Git ───────────────────────────────────────────────────────────
+.git/
+.gitignore
+
+# ── Logs ──────────────────────────────────────────────────────────
+*.log
