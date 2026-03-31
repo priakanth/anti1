@@ -40,14 +40,6 @@ COPY frontend/ ./frontend/
 #   DATABASE_URL=sqlite:////data/todo.db
 RUN mkdir -p /data
 
-# ── Environment defaults ─────────────────────────────────────────
-# IMPORTANT: Railway's proxy determines where to route traffic by
-# reading the EXPOSE instruction. It must be a hardcoded integer.
-EXPOSE 8000
-
-# Set explicitly for safety
-ENV PORT=8000
-
 # Ensure Python output isn't buffered (so logs appear immediately)
 ENV PYTHONUNBUFFERED=1
 
@@ -55,6 +47,8 @@ ENV PYTHONUNBUFFERED=1
 # We run from the /app/backend directory so relative imports & paths work.
 WORKDIR /app/backend
 
-# Run uvicorn strictly bound to 0.0.0.0:8000 
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+# Railway injects the $PORT variable securely at runtime.
+# Using 'sh -c' evaluates it safely dynamically without EXPOSE needed.
+CMD sh -c "uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1"
+
 
