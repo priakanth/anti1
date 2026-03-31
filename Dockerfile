@@ -41,20 +41,20 @@ COPY frontend/ ./frontend/
 RUN mkdir -p /data
 
 # ── Environment defaults ─────────────────────────────────────────
-# PORT: Railway sets this automatically. Default to 8000 locally.
+# IMPORTANT: Railway's proxy determines where to route traffic by
+# reading the EXPOSE instruction. It must be a hardcoded integer.
+EXPOSE 8000
+
+# Set explicitly for safety
 ENV PORT=8000
 
 # Ensure Python output isn't buffered (so logs appear immediately)
 ENV PYTHONUNBUFFERED=1
 
-# ── Expose the port ──────────────────────────────────────────────
-EXPOSE ${PORT}
-
 # ── Start the server ─────────────────────────────────────────────
 # We run from the /app/backend directory so relative imports & paths work.
-# --workers 1: SQLite doesn't support multiple writers safely.
-# --no-access-log: Railway shows its own logs; keeps output clean.
 WORKDIR /app/backend
 
-# Run via the python entry point to ensure $PORT is evaluated safely by Python code
-CMD ["python", "main.py"]
+# Run uvicorn strictly bound to 0.0.0.0:8000 
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
+
