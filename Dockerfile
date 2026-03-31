@@ -48,7 +48,9 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app/backend
 
 # Railway injects the $PORT variable securely at runtime.
-# Using 'sh -c' evaluates it safely dynamically without EXPOSE needed.
-CMD sh -c "uvicorn main:app --host 0.0.0.0 --port $PORT --workers 1"
+# IMPORTANT: Use '::' instead of '0.0.0.0' for the host! 
+# Railway's internal proxy routes healthchecks over IPv6. 
+# Uvicorn on 0.0.0.0 only listens to IPv4, causing 502 Connection Refused.
+CMD sh -c "uvicorn main:app --host :: --port $PORT --workers 1"
 
 
