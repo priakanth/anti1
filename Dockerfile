@@ -56,7 +56,5 @@ EXPOSE ${PORT}
 # --no-access-log: Railway shows its own logs; keeps output clean.
 WORKDIR /app/backend
 
-CMD uvicorn main:app \
-    --host 0.0.0.0 \
-    --port ${PORT} \
-    --workers 1
+# Run via the python entry point to ensure $PORT is evaluated safely by Python code
+CMD ["python", "main.py"]

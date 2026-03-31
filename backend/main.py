@@ -159,3 +159,12 @@ def delete_task(task_id: int, db: Session = Depends(get_db)):
 # -----------------------------------------------------------------------
 if os.path.exists(FRONTEND_DIR):
     app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    # Railway provides the PORT environment variable. Fallback to 8000 locally.
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting server on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port, workers=1)
+
